@@ -6,6 +6,8 @@ import meu.estudo.pedindofacil.entity.ProdutoEntity;
 import meu.estudo.pedindofacil.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProdutoService {
     private final ProdutoRepository produtoRepository;
@@ -31,5 +33,40 @@ public class ProdutoService {
     public void excluir(Long id) {
         ProdutoEntity produtoEntity = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
         produtoRepository.delete(produtoEntity);
+    }
+
+    public ProdutoResponse atualizar(Long id,  ProdutoRequest produto) {
+        ProdutoEntity produtoEntity = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        produtoEntity.setNome(produto.nome());
+        produtoEntity.setPreco(produto.preco());
+
+        var produtoAtualizado = produtoRepository.save(produtoEntity);
+
+        return new ProdutoResponse(
+            produtoAtualizado.getId(),
+            produtoAtualizado.getNome(),
+            produtoAtualizado.getPreco()
+        );
+    }
+
+    public List<ProdutoResponse> listarProdutos() {
+        return produtoRepository.findAll()
+        .stream()
+        .map(produto -> new ProdutoResponse(
+                produto.getId(),
+                produto.getNome(),
+                produto.getPreco()
+        ))
+        .toList();
+    }
+
+    public ProdutoResponse buscarPorId(Long id) {
+        ProdutoEntity produtoEntity = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        return new ProdutoResponse(
+            produtoEntity.getId(),
+            produtoEntity.getNome(),
+            produtoEntity.getPreco()
+        );
     }
 }
