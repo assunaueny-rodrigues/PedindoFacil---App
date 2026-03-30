@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,5 +27,5 @@ public class PedidoEntity {
     private BigDecimal valorTotal;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PedidoItemEntity> itens;
+    private List<PedidoItemEntity> itens = new ArrayList<>();
 }
