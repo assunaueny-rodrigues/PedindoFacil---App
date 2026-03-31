@@ -1,9 +1,8 @@
-package meu.estudo.pedindofacil.service;
+package meu.estudo.pedindofacil.service.produto;
 
-import meu.estudo.pedindofacil.dto.ProdutoRequest;
-import meu.estudo.pedindofacil.dto.ProdutoResponse;
-import meu.estudo.pedindofacil.entity.ProdutoEntity;
-import meu.estudo.pedindofacil.repository.ProdutoRepository;
+import meu.estudo.pedindofacil.dto.produto.ProdutoDTO;
+import meu.estudo.pedindofacil.entity.produto.ProdutoEntity;
+import meu.estudo.pedindofacil.repository.produto.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +15,14 @@ public class ProdutoService {
         this.produtoRepository = produtoRepository;
     }
 
-    public ProdutoResponse salvar(ProdutoRequest produto) {
+    public ProdutoDTO salvar(ProdutoDTO produto) {
         ProdutoEntity produtoEntity = new ProdutoEntity();
         produtoEntity.setNome(produto.nome());
         produtoEntity.setPreco(produto.preco());
 
         var produtoSalvo = produtoRepository.save(produtoEntity);
 
-        return new ProdutoResponse(
+        return new ProdutoDTO(
             produtoSalvo.getId(),
             produtoSalvo.getNome(),
             produtoSalvo.getPreco()
@@ -35,24 +34,24 @@ public class ProdutoService {
         produtoRepository.delete(produtoEntity);
     }
 
-    public ProdutoResponse atualizar(Long id,  ProdutoRequest produto) {
+    public ProdutoDTO atualizar(Long id, ProdutoDTO produto) {
         ProdutoEntity produtoEntity = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
         produtoEntity.setNome(produto.nome());
         produtoEntity.setPreco(produto.preco());
 
         var produtoAtualizado = produtoRepository.save(produtoEntity);
 
-        return new ProdutoResponse(
+        return new ProdutoDTO(
             produtoAtualizado.getId(),
             produtoAtualizado.getNome(),
             produtoAtualizado.getPreco()
         );
     }
 
-    public List<ProdutoResponse> listarProdutos() {
+    public List<ProdutoDTO> listarProdutos() {
         return produtoRepository.findAll()
         .stream()
-        .map(produto -> new ProdutoResponse(
+        .map(produto -> new ProdutoDTO(
                 produto.getId(),
                 produto.getNome(),
                 produto.getPreco()
@@ -60,10 +59,10 @@ public class ProdutoService {
         .toList();
     }
 
-    public ProdutoResponse buscarPorId(Long id) {
+    public ProdutoDTO buscarPorId(Long id) {
         ProdutoEntity produtoEntity = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        return new ProdutoResponse(
+        return new ProdutoDTO(
             produtoEntity.getId(),
             produtoEntity.getNome(),
             produtoEntity.getPreco()

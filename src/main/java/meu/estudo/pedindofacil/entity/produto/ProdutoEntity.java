@@ -1,4 +1,4 @@
-package meu.estudo.pedindofacil.entity;
+package meu.estudo.pedindofacil.entity.produto;
 
 import jakarta.persistence.*;
 import lombok.Getter;

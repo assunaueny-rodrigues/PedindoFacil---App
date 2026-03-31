@@ -1,8 +1,8 @@
-package meu.estudo.pedindofacil.dto;
+package meu.estudo.pedindofacil.dto.produto;
 
 import java.math.BigDecimal;
 
-public record ProdutoResponse(
+public record ProdutoDTO(
    Long id,
    String nome,
    BigDecimal preco

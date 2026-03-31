@@ -1,5 +1,5 @@
-package meu.estudo.pedindofacil.repository;
-import meu.estudo.pedindofacil.entity.ProdutoEntity;
+package meu.estudo.pedindofacil.repository.produto;
+import meu.estudo.pedindofacil.entity.produto.ProdutoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

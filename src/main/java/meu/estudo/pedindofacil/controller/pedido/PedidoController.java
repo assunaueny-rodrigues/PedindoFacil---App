@@ -1,9 +1,7 @@
-package meu.estudo.pedindofacil.controller;
+package meu.estudo.pedindofacil.controller.pedido;
 
-import meu.estudo.pedindofacil.dto.PedidoRequest;
-import meu.estudo.pedindofacil.dto.PedidoResponse;
-import meu.estudo.pedindofacil.dto.ProdutoResponse;
-import meu.estudo.pedindofacil.service.PedidoService;
+import meu.estudo.pedindofacil.dto.pedido.PedidoDTO;
+import meu.estudo.pedindofacil.service.pedido.PedidoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +18,18 @@ public class PedidoController {
     }
 
     @PostMapping
-    public ResponseEntity<PedidoResponse> salvar(@RequestBody PedidoRequest pedidoRequest) {
-        PedidoResponse pedidoResponse = pedidoService.salvar(pedidoRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoResponse);
+    public ResponseEntity<PedidoDTO> salvar(@RequestBody PedidoDTO pedidoDTO) {
+        PedidoDTO pedido = pedidoService.salvar(pedidoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
     }
 
     @GetMapping
-    public ResponseEntity<List<PedidoResponse>> listarPedidos() {
+    public ResponseEntity<List<PedidoDTO>> listarPedidos() {
         return ResponseEntity.status(HttpStatus.OK).body(pedidoService.listarPedidos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PedidoResponse> listarPorId(@PathVariable Long id) {
+    public ResponseEntity<PedidoDTO> listarPorId(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(pedidoService.buscarPorId(id));
     }
 
@@ -42,12 +40,12 @@ public class PedidoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoResponse> atualizar(
-        @RequestBody PedidoRequest pedidoRequest,
+    public ResponseEntity<PedidoDTO> atualizar(
+        @RequestBody PedidoDTO pedidoDTO,
         @PathVariable Long id
     ) {
-        PedidoResponse pedidoResponse = pedidoService.atualizar(id, pedidoRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(pedidoResponse);
+        PedidoDTO pedido = pedidoService.atualizar(id, pedidoDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(pedido);
     }
 }
 

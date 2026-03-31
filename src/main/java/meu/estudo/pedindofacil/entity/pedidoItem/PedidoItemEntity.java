@@ -1,8 +1,9 @@
-package meu.estudo.pedindofacil.entity;
+package meu.estudo.pedindofacil.entity.pedidoItem;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
+import meu.estudo.pedindofacil.entity.pedido.PedidoEntity;
+import meu.estudo.pedindofacil.entity.produto.ProdutoEntity;
 
 import java.math.BigDecimal;
 

@@ -1,9 +1,10 @@
-package meu.estudo.pedindofacil.entity;
+package meu.estudo.pedindofacil.entity.pedido;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import meu.estudo.pedindofacil.entity.pedidoItem.PedidoItemEntity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

@@ -1,14 +1,12 @@
-package meu.estudo.pedindofacil.service;
+package meu.estudo.pedindofacil.service.pedido;
 
-import meu.estudo.pedindofacil.dto.PedidoItemRequest;
-import meu.estudo.pedindofacil.dto.PedidoItemResponse;
-import meu.estudo.pedindofacil.dto.PedidoRequest;
-import meu.estudo.pedindofacil.dto.PedidoResponse;
-import meu.estudo.pedindofacil.entity.PedidoEntity;
-import meu.estudo.pedindofacil.entity.PedidoItemEntity;
-import meu.estudo.pedindofacil.entity.ProdutoEntity;
-import meu.estudo.pedindofacil.repository.PedidoRepository;
-import meu.estudo.pedindofacil.repository.ProdutoRepository;
+import meu.estudo.pedindofacil.dto.pedidoItem.PedidoItemDTO;
+import meu.estudo.pedindofacil.dto.pedido.PedidoDTO;
+import meu.estudo.pedindofacil.entity.pedido.PedidoEntity;
+import meu.estudo.pedindofacil.entity.pedidoItem.PedidoItemEntity;
+import meu.estudo.pedindofacil.entity.produto.ProdutoEntity;
+import meu.estudo.pedindofacil.repository.pedido.PedidoRepository;
+import meu.estudo.pedindofacil.repository.produto.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,13 +25,13 @@ public class PedidoService {
         this.produtoRepository = produtoRepository;
     }
 
-    public PedidoResponse salvar(PedidoRequest pedidoRequest) {
+    public PedidoDTO salvar(PedidoDTO pedidoDTO) {
         PedidoEntity pedidoEntity = new PedidoEntity();
-        pedidoEntity.setNomeCliente(pedidoRequest.nomeCliente());
-        pedidoEntity.setDataPedido(pedidoRequest.dataPedido());
+        pedidoEntity.setNomeCliente(pedidoDTO.nomeCliente());
+        pedidoEntity.setDataPedido(pedidoDTO.dataPedido());
 
         List<PedidoItemEntity> itensEntidade =
-            pedidoRequest.itens().stream()
+            pedidoDTO.itens().stream()
                 .map(itemRequest -> criarPedidoItem(itemRequest, pedidoEntity))
                 .toList();
 
@@ -46,7 +44,7 @@ public class PedidoService {
 
         var itensComTodosDados = criarListaDeItens(pedidoSalvo.getItens());
 
-        return new PedidoResponse(
+        return new PedidoDTO(
             pedidoSalvo.getId(),
             pedidoSalvo.getDataPedido(),
             pedidoSalvo.getNomeCliente(),
@@ -55,16 +53,16 @@ public class PedidoService {
         );
     }
 
-    private PedidoItemEntity criarPedidoItem(PedidoItemRequest itemRequest, PedidoEntity pedido) {
-        ProdutoEntity produto = produtoRepository.findById(itemRequest.id())
-            .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + itemRequest.id()));
+    private PedidoItemEntity criarPedidoItem(PedidoItemDTO pedidoItem, PedidoEntity pedido) {
+        ProdutoEntity produto = produtoRepository.findById(pedidoItem.id())
+            .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + pedidoItem.id()));
 
         PedidoItemEntity item = new PedidoItemEntity();
         item.setProduto(produto);
-        item.setQuantidade(itemRequest.quantidade());
+        item.setQuantidade(pedidoItem.quantidade());
         item.setPedido(pedido);
 
-        BigDecimal valorTotal = produto.getPreco().multiply(BigDecimal.valueOf(itemRequest.quantidade()));
+        BigDecimal valorTotal = produto.getPreco().multiply(BigDecimal.valueOf(pedidoItem.quantidade()));
         item.setValorTotal(valorTotal);
 
         return item;
@@ -76,13 +74,13 @@ public class PedidoService {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private List<PedidoItemResponse> criarListaDeItens(List<PedidoItemEntity> itens) {
+    private List<PedidoItemDTO> criarListaDeItens(List<PedidoItemEntity> itens) {
         return itens.stream()
             .map(item -> {
                 var produto = produtoRepository.findById(item.getProduto().getId())
                         .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + item.getProduto().getId()));
 
-                return new PedidoItemResponse(
+                return new PedidoItemDTO(
                     produto.getId(),
                     produto.getNome(),
                     produto.getPreco(),
@@ -92,15 +90,15 @@ public class PedidoService {
             .toList();
     }
 
-    public List<PedidoResponse> listarPedidos() {
+    public List<PedidoDTO> listarPedidos() {
         return pedidoRepository.findAll().stream()
-            .map(pedido -> new PedidoResponse(
+            .map(pedido -> new PedidoDTO(
                 pedido.getId(),
                 pedido.getDataPedido(),
                 pedido.getNomeCliente(),
                 pedido.getValorTotal(),
                 pedido.getItens().stream()
-                .map(item -> new PedidoItemResponse(
+                .map(item -> new PedidoItemDTO(
                     item.getProduto().getId(),
                     item.getProduto().getNome(),
                     item.getProduto().getPreco(),
@@ -111,11 +109,11 @@ public class PedidoService {
             .toList();
     }
 
-    public PedidoResponse buscarPorId(Long id) {
+    public PedidoDTO buscarPorId(Long id) {
         PedidoEntity pedidoEntity =  pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não encontrado com ID: " + id));
 
         var itens = pedidoEntity.getItens().stream()
-            .map(item -> new PedidoItemResponse(
+            .map(item -> new PedidoItemDTO(
                     item.getProduto().getId(),
                     item.getProduto().getNome(),
                     item.getProduto().getPreco(),
@@ -123,7 +121,7 @@ public class PedidoService {
             ))
             .toList();
 
-        return new PedidoResponse(
+        return new PedidoDTO(
             pedidoEntity.getId(),
             pedidoEntity.getDataPedido(),
             pedidoEntity.getNomeCliente(),
@@ -137,16 +135,16 @@ public class PedidoService {
         pedidoRepository.delete(pedidoEntity);
     }
 
-    public PedidoResponse atualizar(Long id, PedidoRequest pedidoRequest){
+    public PedidoDTO atualizar(Long id, PedidoDTO pedidoDTO){
         PedidoEntity pedidoEntity = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não encontrado com ID: " + id));
-        pedidoEntity.setNomeCliente(pedidoRequest.nomeCliente());
-        pedidoEntity.setDataPedido(pedidoRequest.dataPedido());
+        pedidoEntity.setNomeCliente(pedidoDTO.nomeCliente());
+        pedidoEntity.setDataPedido(pedidoDTO.dataPedido());
 
         // Limpar itens antigos (orphanRemoval = true vai deletar automaticamente)
         pedidoEntity.getItens().clear();
 
         List<PedidoItemEntity> itensEntidade =
-            pedidoRequest.itens().stream()
+            pedidoDTO.itens().stream()
                     .map(itemRequest -> criarPedidoItem(itemRequest, pedidoEntity))
                     .toList();
 
@@ -160,7 +158,7 @@ public class PedidoService {
 
         var itensComTodosDados = criarListaDeItens(pedidoSalvo.getItens());
 
-        return new PedidoResponse(
+        return new PedidoDTO(
             pedidoSalvo.getId(),
             pedidoSalvo.getDataPedido(),
             pedidoSalvo.getNomeCliente(),
